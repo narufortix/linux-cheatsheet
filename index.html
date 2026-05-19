@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Linux · Cheatsheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #0e0a10;
+  --bg2:     #150f18;
+  --bg3:     #1c1420;
+  --bg4:     #231a28;
+  --grn:     #e95420;
+  --grn2:    #ff6d3b;
+  --grn3:    #ffab8f;
+  --orange:  #e95420;
+  --orange2: #ff6d3b;
+  --yellow:  #f5a623;
+  --red:     #ef4444;
+  --blue:    #38bdf8;
+  --purple:  #77216f;
+  --auberg:  #ad5faa;
+  --silver:  #b08090;
+  --dim:     #3a2040;
+  --dim2:    #221530;
+  --text:    #d4b8d8;
+  --text2:   #6a4570;
+  --bg-g:    rgba(233,84,32,0.08);
+  --bg-o:    rgba(119,33,111,0.08);
+  --bdr-g:   rgba(233,84,32,0.22);
+  --bdr-o:   rgba(119,33,111,0.18);
+  --glow-g:  0 0 24px rgba(233,84,32,0.22);
+}
+
+* { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+html { font-size:14px; }
+
+body {
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Fira Code', monospace;
+  min-height:100svh;
+  overflow-x:hidden;
+}
+
+/* ── GRAIN ── */
+body::after {
+  content:''; position:fixed; inset:0; z-index:1000; pointer-events:none; opacity:0.045;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:160px;
+}
+
+/* ── DOT MATRIX ── */
+.dotmat {
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background-image: radial-gradient(rgba(233,84,32,0.06) 1px, transparent 1px);
+  background-size:24px 24px;
+}
+
+/* ── GLOW ── */
+.glows {
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 35% at 50% 0%, rgba(233,84,32,0.09) 0%, transparent 70%),
+    radial-gradient(ellipse 30% 25% at 90% 70%, rgba(119,33,111,0.07) 0%, transparent 60%);
+}
+
+/* ── SCANLINES ── */
+body::before {
+  content:''; position:fixed; inset:0; z-index:999; pointer-events:none;
+  background:repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.03) 3px, rgba(0,0,0,0.03) 4px);
+}
+
+.wrapper { max-width:480px; margin:0 auto; min-height:100svh; position:relative; z-index:1; }
+
+/* ══ HERO ══ */
+.hero { position:relative; overflow:hidden; }
+
+.hero-img {
+  position:relative; height:210px; overflow:hidden;
+}
+.hero-img-bg {
+  position:absolute; inset:0;
+  background:url('https://images.unsplash.com/photo-1629654297299-c8506221ca97?w=800&q=85') center/cover;
+  animation:slowZoom 20s ease-out forwards;
+  filter:brightness(0.3) saturate(0.6) hue-rotate(320deg);
+}
+.hero-img-overlay {
+  position:absolute; inset:0;
+  background:linear-gradient(180deg, rgba(4,10,4,0.3) 0%, rgba(4,10,4,0.05) 35%, rgba(4,10,4,0.97) 100%);
+}
+.hero-img-inner {
+  position:absolute; inset:0; z-index:2;
+  display:flex; flex-direction:column; justify-content:space-between;
+  padding:14px 16px 18px;
+}
+.hero-top-row { display:flex; align-items:flex-start; justify-content:space-between; }
+
+.hero-badge-top {
+  font-family:'Rajdhani',sans-serif; font-size:9px; font-weight:700;
+  letter-spacing:3px; text-transform:uppercase;
+  color:var(--grn); border:1px solid rgba(233,84,32,0.5);
+  padding:4px 10px; background:rgba(0,0,0,0.55); backdrop-filter:blur(6px);
+  display:flex; align-items:center; gap:6px;
+}
+.hero-badge-top::before { content:'$'; animation:blink 2s ease infinite; }
+
+.hero-tux { font-size:44px; opacity:0.22; line-height:1; filter:drop-shadow(0 0 14px rgba(34,197,94,0.6)); }
+
+.hero-img-title {
+  font-family:'Rajdhani',sans-serif; font-size:32px; font-weight:700;
+  line-height:0.9; letter-spacing:1px; color:#fff; margin-bottom:10px;
+  text-shadow:0 0 40px rgba(233,84,32,0.6), 0 0 80px rgba(119,33,111,0.3);
+}
+.hero-img-title span { color:var(--grn2); }
+
+.hero-stats { display:flex; gap:6px; }
+.hstat {
+  background:rgba(14,10,16,0.75); border:1px solid rgba(233,84,32,0.3);
+  padding:5px 10px; display:flex; flex-direction:column; gap:1px;
+  backdrop-filter:blur(6px);
+}
+.hstat-v { font-family:'Rajdhani',sans-serif; font-size:18px; font-weight:700; color:var(--grn2); line-height:1; }
+.hstat-l { font-family:'Rajdhani',sans-serif; font-size:8px; font-weight:500; letter-spacing:1.5px; text-transform:uppercase; color:rgba(168,212,168,0.5); }
+
+/* ── PROMPT BAR ── */
+.prompt-bar {
+  background:var(--bg2); border-bottom:1px solid var(--bdr-g);
+  padding:7px 16px; font-size:11px; color:var(--grn);
+  display:flex; align-items:center; gap:6px; overflow:hidden;
+}
+.pb-user { color:var(--grn2); font-weight:600; }
+.pb-at   { color:var(--silver); }
+.pb-host { color:var(--blue); }
+.pb-path { color:var(--yellow); }
+.pb-sym  { color:var(--grn); }
+.pb-cur  { width:8px; height:14px; background:var(--grn2); animation:blink 1s ease infinite; display:inline-block; margin-left:2px; }
+
+/* ── STATUS CHIPS ── */
+.chips-bar {
+  background:var(--bg2); padding:5px 16px;
+  border-bottom:1px solid var(--bdr-g);
+  display:flex; gap:5px; flex-wrap:wrap;
+}
+.schip {
+  font-family:'Rajdhani',sans-serif; font-size:9px; font-weight:700;
+  letter-spacing:1.5px; text-transform:uppercase; padding:2px 8px; border:1px solid;
+}
+.sc-g { color:var(--grn);    border-color:rgba(233,84,32,0.35); background:rgba(233,84,32,0.09); }
+.sc-o { color:var(--orange); border-color:rgba(249,115,22,0.3); background:rgba(249,115,22,0.07); }
+.sc-b { color:var(--blue);   border-color:rgba(56,189,248,0.25);background:rgba(56,189,248,0.06); }
+.sc-y { color:var(--yellow); border-color:rgba(250,204,21,0.25);background:rgba(250,204,21,0.05); }
+.sc-p { color:#ad5faa;       border-color:rgba(119,33,111,0.35); background:rgba(119,33,111,0.09); }
+.sc-r { color:var(--red);    border-color:rgba(239,68,68,0.25); background:rgba(239,68,68,0.06); }
+
+/* ── BOTTOM NAV ── */
+.bnav {
+  position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+  width:100%; max-width:480px;
+  background:rgba(14,10,16,0.98); border-top:1px solid var(--bdr-g);
+  display:flex; z-index:900;
+  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+}
+.bnav-btn {
+  flex:1; background:none; border:none; color:var(--text2);
+  font-family:'Rajdhani',sans-serif; font-size:9px; font-weight:700;
+  letter-spacing:0.5px; text-transform:uppercase;
+  padding:9px 2px 13px; cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  transition:color 0.2s; min-height:58px;
+}
+.bnav-btn .ic { font-size:16px; }
+.bnav-btn.active { color:var(--grn); }
+.bnav-btn.active .ic { filter:drop-shadow(0 0 6px var(--grn)); }
+
+/* ── PANELS ── */
+.panel { display:none; padding:12px 14px 110px; animation:fadeUp 0.28s ease; }
+.panel.active { display:block; }
+
+/* ── SECTION HEADER ── */
+.sh {
+  font-family:'Rajdhani',sans-serif; font-size:11px; font-weight:700;
+  letter-spacing:3px; text-transform:uppercase; color:var(--grn);
+  padding:8px 0 5px; margin-bottom:10px;
+  display:flex; align-items:center; gap:8px;
+}
+.sh-num { font-size:20px; font-weight:700; color:var(--grn2); font-family:'Rajdhani',sans-serif; line-height:1; min-width:22px; }
+.sh::after { content:''; flex:1; height:1px; background:linear-gradient(90deg, rgba(34,197,94,0.3), transparent); }
+.sh.orange { color:var(--orange); }
+.sh.orange::after { background:linear-gradient(90deg, rgba(249,115,22,0.3), transparent); }
+.sh.blue { color:var(--blue); }
+.sh.blue::after { background:linear-gradient(90deg, rgba(56,189,248,0.3), transparent); }
+.sh.yellow { color:var(--yellow); }
+.sh.yellow::after { background:linear-gradient(90deg, rgba(250,204,21,0.3), transparent); }
+.sh.purple { color:#ad5faa; }
+.sh.purple::after { background:linear-gradient(90deg, rgba(119,33,111,0.35), transparent); }
+
+/* ── SEARCH ── */
+.sw { position:relative; margin-bottom:11px; }
+.sw input {
+  width:100%; background:var(--bg3); border:1px solid var(--dim);
+  color:var(--text); font-family:'Fira Code',monospace; font-size:13px;
+  padding:10px 14px 10px 36px; outline:none;
+  transition:border-color 0.2s, box-shadow 0.2s;
+}
+.sw input:focus { border-color:var(--grn); box-shadow:var(--glow-g); }
+.sw input::placeholder { color:var(--dim); }
+.si { position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:13px; color:var(--text2); }
+
+/* ── FILTER TABS ── */
+.ftabs { display:flex; gap:5px; flex-wrap:wrap; margin-bottom:12px; }
+.ftab {
+  background:var(--bg3); border:1px solid var(--dim); color:var(--text2);
+  font-family:'Rajdhani',sans-serif; font-size:10px; font-weight:700;
+  letter-spacing:1px; text-transform:uppercase; padding:5px 9px; cursor:pointer;
+  transition:all 0.2s; white-space:nowrap;
+}
+.ftab.active { background:var(--bg-g); border-color:var(--grn); color:var(--grn2); }
+
+/* ── ACCORDION ── */
+.acc { border:1px solid var(--dim2); margin-bottom:8px; overflow:hidden; transition:border-color 0.2s; }
+.acc:hover { border-color:rgba(233,84,32,0.2); }
+.acc-h {
+  background:var(--bg3); padding:9px 14px; cursor:pointer;
+  display:flex; align-items:center; justify-content:space-between; user-select:none;
+}
+.acc-title {
+  font-family:'Rajdhani',sans-serif; font-size:11px; font-weight:700;
+  letter-spacing:2px; text-transform:uppercase;
+  display:flex; align-items:center; gap:8px;
+}
+.acc-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.acc-meta { display:flex; align-items:center; gap:6px; }
+.acc-cnt {
+  font-family:'Rajdhani',sans-serif; font-size:10px; color:var(--text2);
+  background:var(--bg2); padding:2px 8px; border-radius:10px;
+}
+.acc-tag {
+  font-family:'Rajdhani',sans-serif; font-size:8px; font-weight:700;
+  letter-spacing:1px; text-transform:uppercase; padding:2px 6px;
+}
+.tag-new { color:var(--orange); border:1px solid rgba(249,115,22,0.35); }
+.tag-amp { color:var(--yellow); border:1px solid rgba(250,204,21,0.3); }
+.tag-ok  { color:var(--grn);   border:1px solid rgba(34,197,94,0.3); }
+
+.acc-chev { color:var(--text2); font-size:11px; transition:transform 0.25s; }
+.acc.open .acc-chev { transform:rotate(180deg); }
+.acc-body { max-height:0; overflow:hidden; transition:max-height 0.32s cubic-bezier(0.4,0,0.2,1); }
+.acc.open .acc-body { max-height:4000px; }
+.acc-desc { padding:7px 14px; font-size:11px; color:var(--text2); border-bottom:1px solid var(--dim2); line-height:1.5; font-family:'Fira Code',monospace; }
+
+/* ── CMD ROW ── */
+.cr {
+  display:flex; align-items:flex-start; justify-content:space-between;
+  padding:7px 14px; border-bottom:1px solid rgba(12,24,12,0.9);
+  gap:8px; transition:background 0.15s;
+}
+.cr:last-child { border-bottom:none; }
+.cr:hover { background:rgba(233,84,32,0.04); }
+.cl { display:flex; flex-direction:column; gap:2px; flex:1; min-width:0; }
+
+.cr code { font-family:'Fira Code',monospace; font-size:12px; color:var(--grn2); word-break:break-all; line-height:1.4; }
+.cr code.orange { color:var(--orange2); }
+.cr code.yellow { color:var(--yellow); }
+.cr code.blue   { color:var(--blue); }
+.cr code.purple { color:var(--purple); }
+.cr code.red    { color:var(--red); }
+.cr code.silver { color:var(--silver); }
+.cr code.white  { color:#d4f4d4; }
+
+.cd { font-size:10.5px; color:var(--text2); line-height:1.4; font-family:'Fira Code',monospace; }
+/* NUEVO tag inline */
+.new-tag {
+  display:inline-block; font-family:'Rajdhani',sans-serif; font-size:8px; font-weight:700;
+  letter-spacing:1px; text-transform:uppercase; padding:1px 5px;
+  color:var(--orange); border:1px solid rgba(249,115,22,0.35); margin-left:5px;
+  vertical-align:middle;
+}
+
+.cpb {
+  background:none; border:1px solid var(--dim); color:var(--text2);
+  font-size:11px; padding:4px 7px; cursor:pointer;
+  font-family:'Fira Code',monospace; transition:all 0.2s;
+  flex-shrink:0; min-width:30px; text-align:center; align-self:flex-start; margin-top:2px;
+}
+.cpb:hover { border-color:var(--grn); color:var(--grn2); }
+.cpb.ok { border-color:var(--grn2); color:var(--grn2); }
+
+/* ── HIDDEN ── */
+.acc[data-hidden="true"] { display:none; }
+.no-res { text-align:center; padding:30px; color:var(--text2); font-size:11px; display:none; }
+.no-res.vis { display:block; }
+.rcount { font-size:10px; color:var(--text2); margin-bottom:10px; letter-spacing:1px; }
+.rcount span { color:var(--grn); }
+
+/* ── INFO BOXES ── */
+.tip  { background:rgba(233,84,32,0.06);  border-left:2px solid var(--grn);    padding:8px 12px; font-size:11px; color:var(--text); line-height:1.6; margin-bottom:8px; font-family:'Fira Code',monospace; }
+.warn { background:rgba(245,166,35,0.07); border-left:2px solid var(--yellow); padding:8px 12px; font-size:11px; color:var(--text); line-height:1.6; margin-bottom:8px; font-family:'Fira Code',monospace; }
+.info { background:rgba(119,33,111,0.07); border-left:2px solid var(--purple); padding:8px 12px; font-size:11px; color:var(--text); line-height:1.6; margin-bottom:8px; font-family:'Fira Code',monospace; }
+.crit { background:rgba(239,68,68,0.07);  border-left:2px solid var(--red);    padding:8px 12px; font-size:11px; color:var(--text); line-height:1.6; margin-bottom:8px; font-family:'Fira Code',monospace; }
+
+/* ── SHORTCUT GRID ── */
+.key-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:10px; }
+.key-card { background:var(--bg3); border:1px solid var(--dim2); padding:8px 10px; display:flex; flex-direction:column; gap:3px; transition:border-color 0.2s; }
+.key-card:hover { border-color:rgba(233,84,32,0.2); }
+.key-name {
+  font-family:'Rajdhani',sans-serif; font-size:13px; font-weight:700; color:var(--yellow);
+  letter-spacing:1px; display:inline-flex; align-items:center; gap:4px;
+}
+.key-name::before { content:''; width:5px; height:5px; background:var(--yellow); border-radius:1px; flex-shrink:0; }
+.key-desc { font-size:10.5px; color:var(--text2); line-height:1.4; font-family:'Fira Code',monospace; }
+
+/* ── CRON ── */
+.cron-fmt {
+  background:var(--bg3); border:1px solid rgba(233,84,32,0.25);
+  padding:12px 14px; margin-bottom:10px;
+}
+.cron-fmt-title {
+  font-family:'Rajdhani',sans-serif; font-size:9px; font-weight:700;
+  letter-spacing:2px; text-transform:uppercase; color:var(--text2); margin-bottom:8px;
+}
+.cron-fields { display:flex; gap:4px; margin-bottom:8px; }
+.cf {
+  flex:1; background:var(--bg2); padding:5px 4px; text-align:center;
+  border:1px solid var(--dim2);
+}
+.cf-val { font-family:'Fira Code',monospace; font-size:11px; color:var(--orange2); }
+.cf-lbl { font-family:'Rajdhani',sans-serif; font-size:8px; letter-spacing:1px; text-transform:uppercase; color:var(--text2); margin-top:2px; }
+.cron-example { font-family:'Fira Code',monospace; font-size:11px; color:var(--yellow); background:var(--bg2); padding:6px 10px; }
+
+/* ── CHECKLIST ── */
+.chki { display:flex; align-items:flex-start; gap:10px; padding:8px 0; border-bottom:1px solid var(--dim2); cursor:pointer; user-select:none; transition:opacity 0.2s; }
+.chki:last-child { border-bottom:none; }
+.chki.done { opacity:0.38; }
+.chkb { width:18px; height:18px; border:1px solid var(--dim); flex-shrink:0; margin-top:1px; display:flex; align-items:center; justify-content:center; font-size:10px; transition:all 0.2s; }
+.chki.done .chkb { background:var(--grn); border-color:var(--grn2); color:#fff; }
+.chkt { font-size:11.5px; color:var(--text); line-height:1.5; font-family:'Fira Code',monospace; }
+.chkt code { color:var(--grn2); font-size:11px; }
+.chki.done .chkt { text-decoration:line-through; color:var(--text2); }
+.chkph { font-family:'Rajdhani',sans-serif; font-size:8px; font-weight:700; letter-spacing:1px; padding:2px 6px; flex-shrink:0; align-self:flex-start; margin-top:2px; white-space:nowrap; }
+
+/* ── PROGRESS ── */
+.pw { background:var(--bg3); border:1px solid var(--dim2); padding:12px 14px; margin-bottom:14px; }
+.pl { font-family:'Rajdhani',sans-serif; font-size:9px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--text2); margin-bottom:6px; display:flex; justify-content:space-between; }
+.pl span { color:var(--grn); }
+.pb { height:3px; background:var(--dim2); overflow:hidden; }
+.pf { height:100%; background:linear-gradient(90deg, var(--grn), var(--auberg,#ad5faa)); width:0%; transition:width 0.4s ease; }
+
+/* ── ANIMATIONS ── */
+@keyframes slowZoom { from{transform:scale(1.07);} to{transform:scale(1);} }
+@keyframes fadeUp   { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+@keyframes blink    { 0%,100%{opacity:1;} 50%{opacity:0.15;} }
+
+::-webkit-scrollbar { width:3px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background:var(--dim); }
+</style>
+</head>
+<body>
+<div class="dotmat"></div>
+<div class="glows"></div>
+<div class="wrapper">
+
+<!-- ══ HERO ══ -->
+<div class="hero">
+  <div class="hero-img">
+    <div class="hero-img-bg"></div>
+    <div class="hero-img-overlay"></div>
+    <div class="hero-img-inner">
+      <div class="hero-top-row">
+        <div class="hero-badge-top">LINUX · CMD REFERENCE</div>
+        <div class="hero-tux">🐧</div>
+      </div>
+      <div>
+        <div class="hero-img-title">GUÍA<br><span>LINUX</span></div>
+        <div class="hero-stats">
+          <div class="hstat"><div class="hstat-v">13</div><div class="hstat-l">Secciones</div></div>
+          <div class="hstat"><div class="hstat-v">120+</div><div class="hstat-l">Comandos</div></div>
+          <div class="hstat"><div class="hstat-v">UFW</div><div class="hstat-l">Firewall</div></div>
+          <div class="hstat"><div class="hstat-v">LXD</div><div class="hstat-l">Containers</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Prompt bar estilo terminal -->
+  <div class="prompt-bar">
+    <span class="pb-user">user</span>
+    <span class="pb-at">@</span>
+    <span class="pb-host">ubuntu-server</span>
+    <span class="pb-at">:</span>
+    <span class="pb-path">~</span>
+    <span class="pb-sym">$</span>
+    <span class="pb-cur"></span>
+  </div>
+
+  <div class="chips-bar">
+    <span class="schip sc-g">SISTEMA</span>
+    <span class="schip sc-g">ARCHIVOS</span>
+    <span class="schip sc-b">RED</span>
+    <span class="schip sc-o">NUEVO</span>
+    <span class="schip sc-y">CRON</span>
+    <span class="schip sc-p">LXD</span>
+    <span class="schip sc-r">UFW</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PANEL 1 — COMANDOS
+═══════════════════════════════════════ -->
+<div class="panel active" id="panel-cmd">
+
+  <div class="sw">
+    <span class="si">$</span>
+    <input type="text" id="search-in" placeholder="buscar comando..." oninput="doSearch(this.value)">
+  </div>
+
+  <div class="ftabs">
+    <button class="ftab active" onclick="fcat('all',this)">ALL</button>
+    <button class="ftab" onclick="fcat('sys',this)">SISTEMA</button>
+    <button class="ftab" onclick="fcat('file',this)">ARCHIVOS</button>
+    <button class="ftab" onclick="fcat('proc',this)">PROCESOS</button>
+    <button class="ftab" onclick="fcat('net',this)">RED</button>
+    <button class="ftab" onclick="fcat('usr',this)">USUARIOS</button>
+    <button class="ftab" onclick="fcat('pkg',this)">PAQUETES</button>
+    <button class="ftab" onclick="fcat('new',this)">NUEVO</button>
+  </div>
+
+  <div class="rcount"><span id="rcn">120+</span> comandos disponibles</div>
+
+  <!-- 1 · SISTEMA -->
+  <div class="acc open" data-cat="sys">
+    <div class="acc-h" onclick="togAcc(this.parentElement)">
+      <div class="acc-title"><div class="acc-dot" style="background:var(--grn)"></div>1 · INFORMACIÓN DEL SISTEMA</div>
+      <div class="acc-meta"><span class="acc-cnt">13</span><span class="acc-tag tag-ok">BASE</span><span class="acc-chev">▾</span></div>
+    </div>
+    <div class="acc-body">
+      <div class="cr"><div class="cl"><code>uname -a</code><div class="cd">Toda la info del sistema: kernel, arquitectura, hostname</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>uname -r / -m / -o</code><div class="cd">Versión kernel / arquitectura / sistema operativo</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>lscpu</code><div class="cd">Información detallada de la CPU: cores, velocidad, arquitectura</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>lsblk</code><div class="cd">Discos, particiones y dispositivos de bloque</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>df -h</code><div class="cd">Uso de disco por partición en formato legible</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>free -h</code><div class="cd">Uso de RAM y swap en formato legible</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>uptime / uptime -p</code><div class="cd">Tiempo encendido y carga promedio del sistema</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>who / w / whoami</code><div class="cd">Usuarios conectados / actividad / usuario actual</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>last</code><div class="cd">Historial de inicios de sesión del sistema</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>env / echo $HOME</code><div class="cd">Variables de entorno / valor de una variable concreta</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>date / timedatectl</code><div class="cd">Fecha y hora / gestión de zona horaria</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="orange">hostnamectl</code><div class="cd">Nombre del host, SO, kernel y arquitectura<span class="new-tag">AMP</span></div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>dmesg | tail -20</code><div class="cd">Mensajes recientes del kernel</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+    </div>
+  </div>
+
+  <!-- 2 · NAVEGACIÓN -->
+  <div class="acc" data-cat="file">
+    <div class="acc-h" onclick="togAcc(this.parentElement)">
+      <div class="acc-title"><div class="acc-dot" style="background:var(--grn)"></div>2 · NAVEGACIÓN Y DIRECTORIOS</div>
+      <div class="acc-meta"><span class="acc-cnt">8</span><span class="acc-tag tag-ok">BASE</span><span class="acc-chev">▾</span></div>
+    </div>
+    <div class="acc-body">
+      <div class="cr"><div class="cl"><code>pwd</code><div class="cd">Muestra el directorio de trabajo actual</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>ls / ls -la / ls -lh</code><div class="cd">Listar / con ocultos y permisos / tamaños legibles</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>ls -lt</code><div class="cd">Listar ordenado por fecha de modificación</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>cd /ruta / cd .. / cd -</code><div class="cd">Ir a ruta / subir nivel / directorio anterior</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>mkdir nuevo</code><div class="cd">Crea directorio nuevo</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>mkdir -p a/b/c</code><div class="cd">Crea directorios anidados de una vez</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>rmdir dir</code><div class="cd">Elimina directorio vacío</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="red">rm -rf dir/</code><div class="cd">Elimina directorio y todo su contenido — irreversible</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+    </div>
+  </div>
+
+  <!-- 3 · ARCHIVOS -->
+  <div class="acc" data-cat="file">
+    <div class="acc-h" onclick="togAcc(this.parentElement)">
+      <div class="acc-title"><div class="acc-dot" style="background:var(--grn)"></div>3 · ARCHIVOS Y CONTENIDO</div>
+      <div class="acc-meta"><span class="acc-cnt">10</span><span class="acc-tag tag-ok">BASE</span><span class="acc-chev">▾</span></div>
+    </div>
+    <div class="acc-body">
+      <div class="cr"><div class="cl"><code>touch archivo</code><div class="cd">Crea archivo vacío o actualiza su fecha de modificación</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>cat archivo</code><div class="cd">Muestra el contenido completo de un archivo</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>less / head / tail archivo</code><div class="cd">Por páginas / primeras / últimas 10 líneas</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="yellow">tail -f logfile</code><div class="cd">Sigue el archivo de log en tiempo real</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>cp origen destino</code><div class="cd">Copia archivos</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>cp -r origen/ destino/</code><div class="cd">Copia directorios recursivamente</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>cp -p archivo copia</code><div class="cd">Copia preservando atributos y timestamps</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>mv origen destino</code><div class="cd">Mueve o renombra archivos y directorios</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="red">rm archivo / rm -rf dir</code><div class="cd">Elimina archivo / directorio completo — sin papelera</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>file archivo</code><div class="cd">Detecta el tipo real del archivo por magic bytes</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+    </div>
+  </div>
+
+  <!-- 4 · BÚSQUEDA -->
+  <div class="acc" data-cat="file">
+    <div class="acc-h" onclick="togAcc(this.parentElement)">
+      <div class="acc-title"><div class="acc-dot" style="background:var(--grn)"></div>4 · BÚSQUEDA Y TEXTO</div>
+      <div class="acc-meta"><span class="acc-cnt">12</span><span class="acc-tag tag-ok">BASE</span><span class="acc-chev">▾</span></div>
+    </div>
+    <div class="acc-body">
+      <div class="cr"><div class="cl"><code>grep 'patrón' archivo</code><div class="cd">Busca patrón en archivo o salida</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>grep -i / -r / -n / -c</code><div class="cd">Sin mayúsc / recursivo / nº línea / contar coincidencias</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>find /ruta -name 'archivo'</code><div class="cd">Busca archivos por nombre en toda la ruta</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>find /ruta -mtime -7</code><div class="cd">Archivos modificados en los últimos 7 días</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>find /ruta -type f -name '*.txt'</code><div class="cd">Busca por tipo (f=archivo, d=directorio) y extensión</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>locate / whereis comando</code><div class="cd">Búsqueda rápida por nombre / localiza binario y manual</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>sed 's/viejo/nuevo/g' f</code><div class="cd">Reemplaza texto en stream o archivo</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>sed '/patrón/d' archivo</code><div class="cd">Elimina líneas que coinciden con el patrón</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>awk '{print $1,$3}' f</code><div class="cd">Extrae columnas concretas de un archivo estructurado</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>sort archivo | uniq</code><div class="cd">Ordena líneas y elimina duplicados</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>wc / wc -l</code><div class="cd">Cuenta caracteres, palabras y líneas / solo líneas</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>cut -d':' -f1,3 / paste f1 f2</code><div class="cd">Extrae columnas por delimitador / combina archivos</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+    </div>
+  </div>
+
+  <!-- 5 · SHELL -->
+  <div class="acc" data-cat="sys">
+    <div class="acc-h" onclick="togAcc(this.parentElement)">
+      <div class="acc-title"><div class="acc-dot" style="background:var(--grn)"></div>5 · SHELL, HISTORIAL Y REDIRECCIÓN</div>
+      <div class="acc-meta"><span class="acc-cnt">11</span><span class="acc-tag tag-ok">BASE</span><span class="acc-chev">▾</span></div>
+    </div>
+    <div class="acc-body">
+      <div class="cr"><div class="cl"><code>man comando</code><div class="cd">Abre el manual completo del comando</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>history / !! / !123</code><div class="cd">Historial / repite último / ejecuta comando por número</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="yellow">Ctrl+R</code><div class="cd">Búsqueda interactiva en el historial de comandos</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>alias ll='ls -la'</code><div class="cd">Crea alias de comando para esta sesión</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>source ~/.bashrc</code><div class="cd">Recarga la configuración del shell sin reiniciar</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>export VAR=valor</code><div class="cd">Define variable de entorno exportada a subprocesos</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>cmd > f / cmd >> f</code><div class="cd">Redirige stdout a archivo / añade sin sobrescribir</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>cmd 2> f / cmd &> f</code><div class="cd">Redirige stderr / redirige stdout y stderr juntos</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>cmd1 | cmd2</code><div class="cd">Pipe: pasa salida de un comando como entrada del siguiente</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>cmd1 && cmd2</code><div class="cd">Ejecuta cmd2 solo si cmd1 tiene éxito (exit 0)</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>cmd &</code><div class="cd">Ejecuta en background — libera el terminal</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+    </div>
+  </div>
+
+  <!-- 6 · PROCESOS -->
+  <div class="acc" data-cat="proc">
+    <div class="acc-h" onclick="togAcc(this.parentElement)">
+      <div class="acc-title"><div class="acc-dot" style="background:var(--yellow)"></div>6 · PROCESOS Y SERVICIOS</div>
+      <div class="acc-meta"><span class="acc-cnt">12</span><span class="acc-tag tag-ok">BASE</span><span class="acc-chev">▾</span></div>
+    </div>
+    <div class="acc-body">
+      <div class="cr"><div class="cl"><code>ps / ps aux</code><div class="cd">Lista procesos en ejecución / todos con detalles</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="yellow">top / htop</code><div class="cd">Monitoriza procesos en tiempo real (htop más visual)</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="red">kill PID / kill -9 PID</code><div class="cd">Finaliza proceso / fuerza terminación inmediata</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="red">killall nombre / pkill</code><div class="cd">Finaliza todos los procesos con ese nombre</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>jobs / bg %1 / fg %1</code><div class="cd">Trabajos en bg / enviar a background / traer a foreground</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>nohup comando &</code><div class="cd">Persiste el proceso al cerrar el terminal</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>watch -n 5 'cmd'</code><div class="cd">Ejecuta un comando cada 5 segundos en tiempo real</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="blue">systemctl status servicio</code><div class="cd">Estado detallado de un servicio systemd</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="blue">systemctl start / stop servicio</code><div class="cd">Inicia o detiene un servicio</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="blue">systemctl enable servicio</code><div class="cd">Activa el servicio para que arranque con el sistema</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="blue">journalctl -f</code><div class="cd">Logs del sistema en tiempo real (como tail -f)</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="blue">journalctl -u unidad</code><div class="cd">Logs de una unidad systemd concreta</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+    </div>
+  </div>
+
+  <!-- 7 · RED -->
+  <div class="acc" data-cat="net">
+    <div class="acc-h" onclick="togAcc(this.parentElement)">
+      <div class="acc-title"><div class="acc-dot" style="background:var(--blue)"></div>7 · RED Y TRANSFERENCIAS</div>
+      <div class="acc-meta"><span class="acc-cnt">13</span><span class="acc-tag tag-amp">AMPLIADO</span><span class="acc-chev">▾</span></div>
+    </div>
+    <div class="acc-body">
+      <div class="cr"><div class="cl"><code class="blue">ip addr show</code><div class="cd">Interfaces de red y direcciones IP asignadas</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="blue">ip route show</code><div class="cd">Tabla de rutas del sistema</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="blue">ip link set eth0 up</code><div class="cd">Levanta una interfaz de red</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="blue">ip -s link</code><div class="cd">Estadísticas de bytes/paquetes de las interfaces</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>ping 8.8.8.8 / ping -c 4</code><div class="cd">Comprueba conectividad / limita a 4 pings</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>traceroute host / mtr host</code><div class="cd">Ruta al destino / diagnóstico mixto continuo</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>netstat -tuln / ss -tuln</code><div class="cd">Puertos en escucha (ss es el moderno)</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="blue">ss -l</code><div class="cd">Sockets en escucha — reemplazo moderno de netstat</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>ssh usuario@host</code><div class="cd">Acceso SSH a equipo remoto</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>scp archivo user@host:/ruta/</code><div class="cd">Copia segura de archivo a host remoto</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>rsync -avz orig/ user@host:/dst/</code><div class="cd">Sincroniza directorios eficientemente con delta</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="orange">sudo netplan apply</code><div class="cd">Aplica configuración de red Netplan<span class="new-tag">NUEVO</span></div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="orange">sudo netplan try</code><div class="cd">Prueba nueva configuración Netplan (reversible)<span class="new-tag">NUEVO</span></div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+    </div>
+  </div>
+
+  <!-- UFW -->
+  <div class="acc" data-cat="net new">
+    <div class="acc-h" onclick="togAcc(this.parentElement)">
+      <div class="acc-title"><div class="acc-dot" style="background:var(--orange)"></div>UFW — CORTAFUEGOS</div>
+      <div class="acc-meta"><span class="acc-cnt">7</span><span class="acc-tag tag-amp">AMPLIADO</span><span class="acc-chev">▾</span></div>
+    </div>
+    <div class="acc-body">
+      <div class="cr"><div class="cl"><code class="orange">sudo ufw status</code><div class="cd">Estado del cortafuegos y reglas activas</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="orange">ufw enable / ufw disable</code><div class="cd">Activa o desactiva UFW</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="orange">ufw allow ssh</code><div class="cd">Permite tráfico SSH (puerto 22)</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="orange">sudo ufw allow &lt;puerto/svc&gt;</code><div class="cd">Permite tráfico en un puerto o servicio concreto</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="orange">sudo ufw deny &lt;puerto/svc&gt;</code><div class="cd">Deniega tráfico en un puerto o servicio</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="orange">sudo ufw delete allow/deny &lt;p&gt;</code><div class="cd">Elimina una regla existente del cortafuegos</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>iptables -L</code><div class="cd">Reglas del cortafuegos de bajo nivel (legacy)</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+    </div>
+  </div>
+
+  <!-- 8 · PERMISOS Y USUARIOS -->
+  <div class="acc" data-cat="usr">
+    <div class="acc-h" onclick="togAcc(this.parentElement)">
+      <div class="acc-title"><div class="acc-dot" style="background:var(--purple)"></div>8 · PERMISOS Y USUARIOS</div>
+      <div class="acc-meta"><span class="acc-cnt">16</span><span class="acc-tag tag-amp">AMPLIADO</span><span class="acc-chev">▾</span></div>
+    </div>
+    <div class="acc-body">
+      <div class="cr"><div class="cl"><code class="purple">chmod 755 / chmod +x</code><div class="cd">Cambia permisos octal / añade ejecución</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="purple">chmod u+x archivo</code><div class="cd">Ejecución solo para el propietario</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="purple">chown user:grupo archivo</code><div class="cd">Cambia propietario y grupo de un archivo</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="purple">chown -R user:grupo dir/</code><div class="cd">Cambia propiedad recursivamente en todo el directorio</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>sha256sum archivo</code><div class="cd">Calcula hash SHA-256 del archivo</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>sha256sum -c checksums.txt</code><div class="cd">Verifica integridad de archivos por hash</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="orange">useradd -m usuario</code><div class="cd">Crea usuario con directorio personal</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="orange">sudo adduser &lt;usuario&gt;</code><div class="cd">Crea usuario de forma interactiva (Ubuntu)<span class="new-tag">AMP</span></div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="orange">usermod -aG grupo usuario</code><div class="cd">Añade usuario a un grupo sin quitar los actuales<span class="new-tag">AMP</span></div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="red">userdel -r usuario</code><div class="cd">Elimina usuario y su directorio personal</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>passwd / passwd usuario</code><div class="cd">Cambia contraseña propia o de otro usuario</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="orange">sudo passwd -l / -u &lt;usuario&gt;</code><div class="cd">Bloquea / desbloquea cuenta de usuario<span class="new-tag">AMP</span></div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="orange">sudo chage &lt;usuario&gt;</code><div class="cd">Configura expiración de contraseña<span class="new-tag">AMP</span></div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>su - / sudo comando</code><div class="cd">Cambia de usuario / eleva privilegios</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>visudo</code><div class="cd">Edita /etc/sudoers de forma segura con validación</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="orange">groupadd grupo / groups usuario</code><div class="cd">Crea grupo / muestra grupos de un usuario<span class="new-tag">AMP</span></div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+    </div>
+  </div>
+
+  <!-- 9 · COMPRESIÓN -->
+  <div class="acc" data-cat="file">
+    <div class="acc-h" onclick="togAcc(this.parentElement)">
+      <div class="acc-title"><div class="acc-dot" style="background:var(--silver)"></div>9 · COMPRESIÓN Y ESPACIO</div>
+      <div class="acc-meta"><span class="acc-cnt">9</span><span class="acc-tag tag-ok">BASE</span><span class="acc-chev">▾</span></div>
+    </div>
+    <div class="acc-body">
+      <div class="cr"><div class="cl"><code>tar -czf archivo.tar.gz dir/</code><div class="cd">Crea archivo comprimido tar.gz</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>tar -czvf nombre.tar.gz [f]</code><div class="cd">Crea tar.gz con salida verbose (muestra progreso)</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>tar -xzf archivo.tar.gz</code><div class="cd">Extrae un archivo tar.gz en el directorio actual</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>tar -xvf nombre.tar.[gz|bz|xz]</code><div class="cd">Extrae con verbose — detecta la compresión automáticamente</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>zip f.zip f1 f2 / unzip f.zip</code><div class="cd">Comprime / descomprime formato ZIP</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>gzip f / gunzip f.gz</code><div class="cd">Comprime / descomprime con gzip</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>du -sh /ruta/</code><div class="cd">Tamaño total de un directorio</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>du -h --max-depth=1</code><div class="cd">Tamaño por subdirectorios de primer nivel</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>df -h</code><div class="cd">Uso de disco por partición montada</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+    </div>
+  </div>
+
+  <!-- 10 · PAQUETES -->
+  <div class="acc" data-cat="pkg">
+    <div class="acc-h" onclick="togAcc(this.parentElement)">
+      <div class="acc-title"><div class="acc-dot" style="background:var(--orange)"></div>10 · PAQUETES APT + SNAP</div>
+      <div class="acc-meta"><span class="acc-cnt">14</span><span class="acc-tag tag-amp">AMPLIADO</span><span class="acc-chev">▾</span></div>
+    </div>
+    <div class="acc-body">
+      <div class="cr"><div class="cl"><code class="orange">apt update && apt upgrade</code><div class="cd">Actualiza repositorios y todos los paquetes</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="orange">apt install paquete</code><div class="cd">Instala un paquete y sus dependencias</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="orange">apt remove paquete</code><div class="cd">Elimina un paquete (mantiene archivos de config)</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="orange">sudo apt purge paquete</code><div class="cd">Elimina paquete y todos sus archivos de configuración</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="orange">sudo apt install -f --reinstall p</code><div class="cd">Reinstala un paquete roto o corrupto<span class="new-tag">AMP</span></div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="orange">apt search paquete</code><div class="cd">Busca paquetes en los repositorios APT</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="orange">apt-cache policy paquete</code><div class="cd">Versiones disponibles del paquete y su origen<span class="new-tag">AMP</span></div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="yellow">snap find &lt;paquete&gt;</code><div class="cd">Busca paquetes Snap disponibles<span class="new-tag">AMP</span></div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="yellow">snap install paquete</code><div class="cd">Instala paquete Snap</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="yellow">sudo snap remove &lt;snap&gt;</code><div class="cd">Elimina un paquete Snap<span class="new-tag">AMP</span></div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="yellow">sudo snap refresh</code><div class="cd">Actualiza todos los Snaps instalados<span class="new-tag">AMP</span></div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="yellow">snap list / snap info &lt;snap&gt;</code><div class="cd">Lista Snaps instalados / info de un Snap<span class="new-tag">AMP</span></div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>yum install paquete / yum update</code><div class="cd">Instala o actualiza paquetes en RHEL/CentOS</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>mount /dev/sda1 /mnt</code><div class="cd">Monta una partición manualmente</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+    </div>
+  </div>
+
+  <!-- CRON -->
+  <div class="acc" data-cat="new">
+    <div class="acc-h" onclick="togAcc(this.parentElement)">
+      <div class="acc-title"><div class="acc-dot" style="background:var(--yellow)"></div>11 · CRON JOBS</div>
+      <div class="acc-meta"><span class="acc-cnt">3</span><span class="acc-tag tag-new">NUEVO</span><span class="acc-chev">▾</span></div>
+    </div>
+    <div class="acc-body">
+      <div class="acc-desc">Formato: min hora día_mes mes día_semana comando. Ejemplo: 30 2 * * 1 /usr/bin/backup.sh → lunes a las 02:30</div>
+      <div class="cr"><div class="cl"><code class="yellow">crontab -e</code><div class="cd">Edita los cron jobs del usuario actual</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="yellow">crontab -l</code><div class="cd">Lista todos los cron jobs del usuario actual</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="red">crontab -r</code><div class="cd">Elimina TODOS los cron jobs del usuario — irreversible</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+    </div>
+  </div>
+
+  <!-- LXD -->
+  <div class="acc" data-cat="new">
+    <div class="acc-h" onclick="togAcc(this.parentElement)">
+      <div class="acc-title"><div class="acc-dot" style="background:var(--purple)"></div>12 · LXD — CONTENEDORES Y VMs</div>
+      <div class="acc-meta"><span class="acc-cnt">14</span><span class="acc-tag tag-new">NUEVO</span><span class="acc-chev">▾</span></div>
+    </div>
+    <div class="acc-body">
+      <div class="cr"><div class="cl"><code class="purple">lxd init</code><div class="cd">Inicializa LXD antes del primer uso</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="purple">lxc init ubuntu:22.04 &lt;nombre&gt;</code><div class="cd">Crea contenedor sin arrancarlo</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="purple">lxc launch ubuntu:24.04 &lt;nombre&gt;</code><div class="cd">Crea y arranca contenedor Ubuntu 24.04</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="purple">lxc launch ubuntu:22.04 &lt;n&gt; --vm</code><div class="cd">Crea y arranca una máquina virtual (en vez de contenedor)</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="purple">lxc list</code><div class="cd">Lista todas las instancias (contenedores y VMs)</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="purple">lxc info &lt;instancia&gt;</code><div class="cd">Información detallada de una instancia</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="purple">lxc start / stop &lt;instancia&gt;</code><div class="cd">Arranca o detiene una instancia</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="red">lxc delete &lt;instancia&gt; [--force]</code><div class="cd">Elimina una instancia (--force si está arrancada)</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="purple">lxc exec &lt;inst&gt; -- bash</code><div class="cd">Abre shell bash dentro de la instancia</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="purple">lxc console &lt;instancia&gt;</code><div class="cd">Accede a la consola de la instancia</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="purple">lxc file pull &lt;inst&gt;/&lt;ruta&gt; &lt;local&gt;</code><div class="cd">Descarga archivo desde la instancia al host</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="purple">lxc file push &lt;local&gt; &lt;inst&gt;/&lt;ruta&gt;</code><div class="cd">Sube archivo del host a la instancia</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="purple">lxc project create &lt;proyecto&gt;</code><div class="cd">Crea un nuevo proyecto LXD</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="purple">lxc project switch &lt;proyecto&gt;</code><div class="cd">Cambia al proyecto indicado</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+    </div>
+  </div>
+
+  <!-- UBUNTU PRO -->
+  <div class="acc" data-cat="new pkg">
+    <div class="acc-h" onclick="togAcc(this.parentElement)">
+      <div class="acc-title"><div class="acc-dot" style="background:var(--orange)"></div>13 · UBUNTU PRO</div>
+      <div class="acc-meta"><span class="acc-cnt">9</span><span class="acc-tag tag-new">NUEVO</span><span class="acc-chev">▾</span></div>
+    </div>
+    <div class="acc-body">
+      <div class="acc-desc">Seguridad ampliada 10 años: ESM, FIPS, Livepatch. Gratis hasta 5 máquinas en ubuntu.com/pro</div>
+      <div class="cr"><div class="cl"><code class="orange">sudo pro attach &lt;token&gt;</code><div class="cd">Vincula la máquina a Ubuntu Pro con tu token</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="orange">sudo pro status</code><div class="cd">Estado de todos los servicios Ubuntu Pro activos</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="orange">sudo pro enable &lt;servicio&gt;</code><div class="cd">Activa un servicio Pro (esm-infra, livepatch, fips...)</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="orange">sudo pro disable &lt;servicio&gt;</code><div class="cd">Desactiva un servicio Ubuntu Pro</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="orange">sudo pro enable esm-infra</code><div class="cd">ESM para infraestructura — parches extra para paquetes del SO</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="orange">sudo pro enable esm-apps</code><div class="cd">ESM para aplicaciones — parches para software de usuario</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="orange">sudo pro enable livepatch</code><div class="cd">Parches del kernel en caliente sin reiniciar el sistema</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="orange">sudo pro enable fips</code><div class="cd">Modo FIPS — criptografía estricta certificada</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="orange">sudo pro refresh / pro detach</code><div class="cd">Actualiza estado Pro / desvincula la máquina</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+    </div>
+  </div>
+
+  <div class="no-res" id="no-res">// sin resultados</div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PANEL 2 — CRON + HERRAMIENTAS
+═══════════════════════════════════════ -->
+<div class="panel" id="panel-cron">
+
+  <div class="sh yellow"><span class="sh-num">11</span>FORMATO CRON</div>
+
+  <div class="cron-fmt">
+    <div class="cron-fmt-title">// ESTRUCTURA DE UN CRON JOB</div>
+    <div class="cron-fields">
+      <div class="cf"><div class="cf-val">*</div><div class="cf-lbl">min</div></div>
+      <div class="cf"><div class="cf-val">*</div><div class="cf-lbl">hora</div></div>
+      <div class="cf"><div class="cf-val">*</div><div class="cf-lbl">día mes</div></div>
+      <div class="cf"><div class="cf-val">*</div><div class="cf-lbl">mes</div></div>
+      <div class="cf"><div class="cf-val">*</div><div class="cf-lbl">día sem</div></div>
+      <div class="cf" style="flex:2; border-color:rgba(249,115,22,0.3);"><div class="cf-val" style="color:var(--grn2);">cmd</div><div class="cf-lbl">comando</div></div>
+    </div>
+    <div class="cron-example">30 2 * * 1 /usr/bin/backup.sh</div>
+  </div>
+
+  <div class="warn">Ejemplo: <code style="color:var(--yellow)">30 2 * * 1</code> = cada lunes a las 02:30. El 0 y 7 son domingo en día de semana.</div>
+
+  <div class="sh yellow" style="margin-top:12px">EXPRESIONES ESPECIALES</div>
+
+  <div class="acc open" data-cat="cron-spec">
+    <div class="acc-h" onclick="togAcc(this.parentElement)">
+      <div class="acc-title"><div class="acc-dot" style="background:var(--yellow)"></div>ATAJOS CRON</div>
+      <div class="acc-meta"><span class="acc-cnt">6</span><span class="acc-chev">▾</span></div>
+    </div>
+    <div class="acc-body">
+      <div class="cr"><div class="cl"><code class="yellow">@reboot</code><div class="cd">Ejecuta el comando una vez al arrancar el sistema</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="yellow">@hourly</code><div class="cd">Cada hora — equivale a: 0 * * * *</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="yellow">@daily</code><div class="cd">Una vez al día a medianoche — equivale a: 0 0 * * *</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="yellow">@weekly</code><div class="cd">Una vez a la semana — equivale a: 0 0 * * 0</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="yellow">@monthly</code><div class="cd">El día 1 de cada mes a medianoche</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="yellow">*/5 * * * *</code><div class="cd">Cada 5 minutos — la barra / significa "cada N"</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+    </div>
+  </div>
+
+  <div class="sh blue" style="margin-top:14px">HERRAMIENTAS ÚTILES</div>
+
+  <div class="acc open" data-cat="tools">
+    <div class="acc-h" onclick="togAcc(this.parentElement)">
+      <div class="acc-title"><div class="acc-dot" style="background:var(--blue)"></div>RECUPERACIÓN Y UTILIDADES</div>
+      <div class="acc-meta"><span class="acc-cnt">7</span><span class="acc-chev">▾</span></div>
+    </div>
+    <div class="acc-body">
+      <div class="cr"><div class="cl"><code class="blue">mount /dev/sda1 /mnt</code><div class="cd">Monta una partición manualmente en /mnt</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="blue">chroot /mnt</code><div class="cd">Entra en sistema montado para recuperación</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>grub-install /dev/sda && update-grub</code><div class="cd">Reinstala y actualiza el gestor de arranque GRUB</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>fsck -f /dev/sda1</code><div class="cd">Comprueba y repara el sistema de archivos</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>lsof</code><div class="cd">Lista todos los archivos abiertos por procesos activos</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code class="blue">screen / screen -r</code><div class="cd">Crea / reanuda sesión de terminal persistente</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+      <div class="cr"><div class="cl"><code>nano ~/.bashrc</code><div class="cd">Edita la configuración del shell con nano</div></div><button class="cpb" onclick="cp(event,this)">⎘</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PANEL 3 — ATAJOS
+═══════════════════════════════════════ -->
+<div class="panel" id="panel-keys">
+
+  <div class="sh">ATAJOS BASH</div>
+  <div class="key-grid">
+    <div class="key-card"><div class="key-name">Ctrl+C</div><div class="key-desc">Detiene el comando en ejecución</div></div>
+    <div class="key-card"><div class="key-name">Ctrl+Z</div><div class="key-desc">Suspende el proceso (bg con bg %1)</div></div>
+    <div class="key-card"><div class="key-name">Ctrl+A</div><div class="key-desc">Mueve cursor al inicio de la línea</div></div>
+    <div class="key-card"><div class="key-name">Ctrl+E</div><div class="key-desc">Mueve cursor al final de la línea</div></div>
+    <div class="key-card"><div class="key-name">Ctrl+U</div><div class="key-desc">Corta desde el cursor hasta el inicio</div></div>
+    <div class="key-card"><div class="key-name">Ctrl+K</div><div class="key-desc">Corta desde el cursor hasta el final</div></div>
+    <div class="key-card"><div class="key-name">Ctrl+R</div><div class="key-desc">Búsqueda interactiva en historial</div></div>
+    <div class="key-card"><div class="key-name">Alt+.</div><div class="key-desc">Inserta el último argumento del comando anterior</div></div>
+  </div>
+
+  <div class="sh orange" style="margin-top:6px">ATAJOS NANO</div>
+  <div class="key-grid">
+    <div class="key-card" style="border-color:rgba(249,115,22,0.15)"><div class="key-name" style="color:var(--orange)">Ctrl+O</div><div class="key-desc">Guardar el archivo (WriteOut)</div></div>
+    <div class="key-card" style="border-color:rgba(249,115,22,0.15)"><div class="key-name" style="color:var(--orange)">Ctrl+X</div><div class="key-desc">Salir de nano (pide guardar si hay cambios)</div></div>
+    <div class="key-card" style="border-color:rgba(249,115,22,0.15)"><div class="key-name" style="color:var(--orange)">Ctrl+R</div><div class="key-desc">Abrir archivo / insertar contenido</div></div>
+    <div class="key-card" style="border-color:rgba(249,115,22,0.15)"><div class="key-name" style="color:var(--orange)">Ctrl+W</div><div class="key-desc">Buscar texto en el archivo</div></div>
+    <div class="key-card" style="border-color:rgba(249,115,22,0.15)"><div class="key-name" style="color:var(--orange)">Ctrl+\</div><div class="key-desc">Buscar y reemplazar texto</div></div>
+    <div class="key-card" style="border-color:rgba(249,115,22,0.15)"><div class="key-name" style="color:var(--orange)">Alt+A</div><div class="key-desc">Seleccionar texto (modo marca)</div></div>
+    <div class="key-card" style="border-color:rgba(249,115,22,0.15)"><div class="key-name" style="color:var(--orange)">Ctrl+K</div><div class="key-desc">Cortar línea o selección</div></div>
+    <div class="key-card" style="border-color:rgba(249,115,22,0.15)"><div class="key-name" style="color:var(--orange)">Ctrl+U</div><div class="key-desc">Pegar línea cortada</div></div>
+  </div>
+
+  <div class="sh purple" style="margin-top:6px">ATAJOS SCREEN</div>
+  <div class="key-grid">
+    <div class="key-card" style="border-color:rgba(167,139,250,0.15)"><div class="key-name" style="color:var(--purple)">Ctrl+A</div><div class="key-desc">Prefijo para todos los comandos de screen</div></div>
+    <div class="key-card" style="border-color:rgba(167,139,250,0.15)"><div class="key-name" style="color:var(--purple)">Ctrl+A c</div><div class="key-desc">Nueva ventana de terminal</div></div>
+    <div class="key-card" style="border-color:rgba(167,139,250,0.15)"><div class="key-name" style="color:var(--purple)">Ctrl+A n/p</div><div class="key-desc">Siguiente / anterior ventana</div></div>
+    <div class="key-card" style="border-color:rgba(167,139,250,0.15)"><div class="key-name" style="color:var(--purple)">Ctrl+A "</div><div class="key-desc">Listar todas las ventanas</div></div>
+    <div class="key-card" style="border-color:rgba(167,139,250,0.15)"><div class="key-name" style="color:var(--purple)">Ctrl+A A</div><div class="key-desc">Renombrar la ventana actual</div></div>
+    <div class="key-card" style="border-color:rgba(167,139,250,0.15)"><div class="key-name" style="color:var(--purple)">Ctrl+A d</div><div class="key-desc">Desconectar sesión (sigue en background)</div></div>
+  </div>
+
+  <div class="tip" style="margin-top:8px">✅ Tras desconectar con <code style="color:var(--grn2)">Ctrl+A d</code>, reconecta con <code style="color:var(--grn2)">screen -r</code>. Útil para procesos largos en SSH.</div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PANEL 4 — CHECKLIST ADMIN
+═══════════════════════════════════════ -->
+<div class="panel" id="panel-check">
+
+  <div class="sh">CHECKLIST ADMINISTRACIÓN</div>
+
+  <div class="pw">
+    <div class="pl">Tareas completadas <span id="cpct">0%</span></div>
+    <div class="pb"><div class="pf" id="cbar"></div></div>
+  </div>
+
+  <div class="warn">⚠ Los comandos marcados en <span style="color:var(--orange)">naranja</span> a lo largo de la guía son incorporaciones nuevas de la Ubuntu CLI Cheat Sheet (Canonical 2024).</div>
+
+  <div id="chklist">
+    <div class="chki" onclick="togChk(this)"><div class="chkb">✓</div><div class="chkt">Verificar versión kernel con <code>uname -a</code> y <code>hostnamectl</code></div><span class="chkph sc-g schip">SYS</span></div>
+    <div class="chki" onclick="togChk(this)"><div class="chkb">✓</div><div class="chkt">Revisar uso de disco y RAM: <code>df -h</code> y <code>free -h</code></div><span class="chkph sc-g schip">SYS</span></div>
+    <div class="chki" onclick="togChk(this)"><div class="chkb">✓</div><div class="chkt">Comprobar servicios críticos con <code>systemctl status</code></div><span class="chkph sc-b schip">SERV</span></div>
+    <div class="chki" onclick="togChk(this)"><div class="chkb">✓</div><div class="chkt">Revisar logs del sistema con <code>journalctl -f</code></div><span class="chkph sc-b schip">LOGS</span></div>
+    <div class="chki" onclick="togChk(this)"><div class="chkb">✓</div><div class="chkt">Actualizar sistema con <code>apt update && apt upgrade</code></div><span class="chkph sc-o schip">PKG</span></div>
+    <div class="chki" onclick="togChk(this)"><div class="chkb">✓</div><div class="chkt">Verificar estado del cortafuegos con <code>sudo ufw status</code></div><span class="chkph sc-r schip">UFW</span></div>
+    <div class="chki" onclick="togChk(this)"><div class="chkb">✓</div><div class="chkt">Revisar puertos en escucha con <code>ss -tuln</code></div><span class="chkph sc-b schip">RED</span></div>
+    <div class="chki" onclick="togChk(this)"><div class="chkb">✓</div><div class="chkt">Comprobar configuración Netplan con <code>netplan try</code></div><span class="chkph sc-b schip">NET</span></div>
+    <div class="chki" onclick="togChk(this)"><div class="chkb">✓</div><div class="chkt">Revisar usuarios con shell activa en <code>/etc/passwd</code></div><span class="chkph sc-p schip">USR</span></div>
+    <div class="chki" onclick="togChk(this)"><div class="chkb">✓</div><div class="chkt">Listar cron jobs activos con <code>crontab -l</code></div><span class="chkph sc-y schip">CRON</span></div>
+    <div class="chki" onclick="togChk(this)"><div class="chkb">✓</div><div class="chkt">Verificar contenedores LXD con <code>lxc list</code></div><span class="chkph sc-p schip">LXD</span></div>
+    <div class="chki" onclick="togChk(this)"><div class="chkb">✓</div><div class="chkt">Comprobar estado Ubuntu Pro con <code>pro status</code></div><span class="chkph sc-o schip">PRO</span></div>
+    <div class="chki" onclick="togChk(this)"><div class="chkb">✓</div><div class="chkt">Verificar integridad con <code>sha256sum -c checksums.txt</code></div><span class="chkph sc-g schip">HASH</span></div>
+  </div>
+
+  <div class="tip" style="margin-top:14px">✅ Ejecuta <code style="color:var(--grn2)">sudo pro status</code> para ver si tienes parches de seguridad extendidos disponibles.</div>
+  <div class="info">🔵 <code style="color:var(--grn2)">sudo pro enable livepatch</code> aplica parches del kernel en caliente sin necesidad de reiniciar.</div>
+  <div class="crit">⛔ <code style="color:var(--grn2)">rm -rf /</code> o <code style="color:var(--grn2)">crontab -r</code> sin copia de seguridad son irreversibles. Siempre doble check.</div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bnav">
+  <button class="bnav-btn active" onclick="sw('panel-cmd',this)">
+    <span class="ic">$</span>COMANDOS
+  </button>
+  <button class="bnav-btn" onclick="sw('panel-cron',this)">
+    <span class="ic">⏱</span>CRON
+  </button>
+  <button class="bnav-btn" onclick="sw('panel-keys',this)">
+    <span class="ic">⌨</span>ATAJOS
+  </button>
+  <button class="bnav-btn" onclick="sw('panel-check',this)">
+    <span class="ic">▣</span>ADMIN
+  </button>
+</nav>
+
+</div>
+
+<script>
+function sw(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function togAcc(item) {
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.acc.open').forEach(i => { if(i!==item) i.classList.remove('open'); });
+  item.classList.toggle('open', !isOpen);
+}
+
+function togChk(el) {
+  el.classList.toggle('done');
+  const items = document.querySelectorAll('.chki');
+  const done  = document.querySelectorAll('.chki.done');
+  const pct   = Math.round(done.length / items.length * 100);
+  document.getElementById('cpct').textContent = pct + '%';
+  document.getElementById('cbar').style.width = pct + '%';
+}
+
+function cp(event, btn) {
+  event.stopPropagation();
+  const code = btn.previousElementSibling.querySelector('code').textContent.trim();
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent='✓'; btn.classList.add('ok');
+    setTimeout(()=>{ btn.textContent='⎘'; btn.classList.remove('ok'); },1500);
+  });
+}
+
+let activeCat = 'all';
+function fcat(cat, btn) {
+  activeCat = cat;
+  document.querySelectorAll('.ftab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.acc').forEach(g => {
+    if (!g.dataset.cat) return;
+    g.toggleAttribute('data-hidden', cat !== 'all' && !g.dataset.cat.includes(cat));
+  });
+  document.getElementById('search-in').value = '';
+  updateRc();
+}
+
+function doSearch(q) {
+  const ql = q.toLowerCase().trim();
+  document.querySelectorAll('.acc').forEach(g => {
+    if (!g.dataset.cat) return;
+    if (activeCat !== 'all' && !g.dataset.cat.includes(activeCat)) { g.setAttribute('data-hidden','true'); return; }
+    if (!ql) { g.removeAttribute('data-hidden'); return; }
+    if (g.textContent.toLowerCase().includes(ql)) {
+      g.removeAttribute('data-hidden');
+      if (!g.classList.contains('open')) g.classList.add('open');
+    } else {
+      g.setAttribute('data-hidden','true');
+    }
+  });
+  const vis = document.querySelectorAll('.acc:not([data-hidden])');
+  document.getElementById('no-res').classList.toggle('vis', vis.length === 0);
+  updateRc();
+}
+
+function updateRc() {
+  const vis = document.querySelectorAll('.acc:not([data-hidden]) .cr');
+  document.getElementById('rcn').textContent = vis.length || '120+';
+}
+</script>
+</body>
+</html>
